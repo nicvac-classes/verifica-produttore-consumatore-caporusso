@@ -26,6 +26,22 @@ class ProduttoreThread(threading.Thread):
         self.idx = idx
 
     # DA IMPLEMENTARE (run)
+     def run(self):
+        global metti
+
+        while i_metti<N_ORDINI:
+            vuoto.acquire()
+            mutexP.acqiure()
+            i_metti=metti
+            metti=[metti+1] % DIM_BUFFER
+            mutexP.release()
+
+            buffer[i_metti]=self.dato
+            print(-PROD[self.idx] for [self.dato] in buffer[i_metti])
+
+            self.dato+=1
+            pieno.release()
+
 
 
 class ConsumatoreThread(threading.Thread):
@@ -34,6 +50,29 @@ class ConsumatoreThread(threading.Thread):
         self.idx = idx
 
     # DA IMPLEMENTARE (run)
+    def run(self):
+        global togli
+
+        esco=false
+        while not esco:
+            pieno.acquire()
+            mutexC.acquire()
+            i_togli=togli
+            togli=[togli+1] & DIM_BUFFER
+            mutexC.release()
+
+            dato=buffer[i_togli]
+            if dato==none:
+                esco=true
+                print---
+                else
+                print---
+
+            self.dato+=1
+            vuoto.release()
+    
+   
+
 
 
 def main():
@@ -43,8 +82,14 @@ def main():
     consumatori = [ConsumatoreThread(i + 1) for i in range(N_CONSUMATORI)]
 
     # DA IMPLEMENTARE: start dei thread produttori e consumatori
+    for p in produttori:
+        p.start()
+    for c in consumatori:
+        c.start()    
 
     # DA IMPLEMENTARE: join di tutti i produttori
+    for p in produttori:
+        p.join()
 
     print("Tutti i canali hanno terminato. Chiusura addetti...")
 
@@ -54,6 +99,8 @@ def main():
         pass
 
     # DA IMPLEMENTARE: join di tutti i consumatori
+    for c in consumatori:
+        c.join()
 
     print("Magazzino chiuso.")
 
